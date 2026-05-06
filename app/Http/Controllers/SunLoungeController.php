@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Http\Controllers;
+use App\Models\Space;
+
+class SunLoungeController extends Controller
+{
+    public function index()
+    {
+        $space = Space::query()->where('slug', '=', 'sun-lounge')->first();
+
+        // Kalau space tidak active → redirect ke home
+        if (!$space || !$space->is_active) {
+            return redirect()->route('home');
+        }
+
+        // Kalau sedang maintenance → tampil halaman maintenance
+        if ($space->is_maintenance) {
+            return view('maintenance', compact('space'));
+        }
+
+        $otherSpaces = Space::query()
+        ->where('is_active', '=', true)
+        ->where('slug', '!=', 'sun-lounge')
+        ->get();
+
+        $galleryTop = collect(glob(public_path('images/sunlounge-gallery-top-*')))
+            ->map(fn($path) => 'images/' . basename($path))
+            ->sort()->values()->toArray();
+
+        $galleryBottom = collect(glob(public_path('images/sunlounge-gallery-bottom-*')))
+            ->map(fn($path) => 'images/' . basename($path))
+            ->sort()->values()->toArray();
+
+        $showcase = collect(glob(public_path('images/sunlounge-showcase-*')))
+            ->map(fn($path) => 'images/' . basename($path))
+            ->sort()->values()->toArray();
+
+        return view('sunlounge.index', compact('galleryTop', 'galleryBottom', 'showcase', 'space', 'otherSpaces'));
+    }
+}

@@ -1,0 +1,427 @@
+<?php
+
+namespace App\Filament\Resources\Bookings;
+
+use App\Filament\Resources\Bookings\Pages;
+use App\Models\Booking;
+use App\Models\Space;
+use Illuminate\Support\Facades\Http;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
+use Filament\Support\Enums\FontWeight;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
+
+class BookingResource extends Resource
+{
+    protected static ?string $model = Booking::class;
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar';
+    protected static ?string $navigationLabel = 'Bookings';
+    protected static ?int $navigationSort = 1;
+
+    public static function form(Schema $form): Schema
+    {
+        return $form->schema([
+            Section::make('Booking Info')
+                ->schema([
+                    Select::make('space_id')
+                        ->label('Space')
+                        ->options(fn () => Space::all()->pluck('name', 'id')->toArray())
+                        ->required(),
+                    TextInput::make('name')
+                        ->label('Customer Name')
+                        ->required(),
+                    TextInput::make('email')
+                        ->email()
+                        ->required(),
+                    TextInput::make('whatsapp')
+                        ->label('WhatsApp')
+                        ->required(),
+                    DateTimePicker::make('booking_date')
+                        ->label('Booking Date & Time')
+                        ->required(),
+                    TextInput::make('duration')
+                        ->required(),
+                    Textarea::make('addon')
+                        ->label('Add-On Request')
+                        ->rows(3),
+                    Textarea::make('notes')
+                        ->rows(3),
+                ])->columns(2),
+
+            Section::make('Status & Payment')
+                ->schema([
+                    Select::make('status')
+                        ->options([
+                            'pending'      => 'Pending',
+                            'contacted'    => 'Contacted',
+                            'invoice_sent' => 'Invoice Sent',
+                            'confirmed'    => 'Confirmed',
+                            'completed'    => 'Completed',
+                            'cancelled'    => 'Cancelled',
+                        ])
+                        ->required(),
+                    TextInput::make('total_price')
+                        ->label('Total Price (IDR)')
+                        ->numeric(),
+                    TextInput::make('invoice_number')
+                        ->label('Invoice Number'),
+                    FileUpload::make('invoice_path')
+                        ->label('Invoice PDF')
+                        ->acceptedFileTypes(['application/pdf'])
+                        ->directory('invoices'),
+                    FileUpload::make('payment_proof_path')
+                        ->label('Payment Proof')
+                        ->image()
+                        ->directory('payment-proofs')
+                        ->disk('public'),
+                ])->columns(2),
+
+            Section::make('Completion Notes')
+                ->schema([
+                    Textarea::make('completion_notes')
+                        ->label('General Notes')
+                        ->rows(3),
+                    Textarea::make('damage_notes')
+                        ->label('Damage / Loss Notes')
+                        ->rows(3),
+                    TextInput::make('extra_time')
+                        ->label('Extra Time'),
+                ])->columns(2),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Customer')
+                    ->searchable()
+                    ->sortable()
+                    ->weight(FontWeight::Medium),
+                Tables\Columns\TextColumn::make('space.name')
+                    ->label('Space')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('booking_date')
+                    ->label('Date & Time')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('duration')
+                    ->label('Duration'),
+                Tables\Columns\TextColumn::make('whatsapp')
+                    ->label('WhatsApp'),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending'      => 'warning',
+                        'contacted'    => 'info',
+                        'invoice_sent' => 'primary',
+                        'confirmed'    => 'success',
+                        'completed'    => 'gray',
+                        'cancelled'    => 'danger',
+                        default        => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'pending'      => 'Pending',
+                        'contacted'    => 'Contacted',
+                        'invoice_sent' => 'Invoice Sent',
+                        'confirmed'    => 'Confirmed',
+                        'completed'    => 'Completed',
+                        'cancelled'    => 'Cancelled',
+                        default        => $state,
+                    }),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->label('Total')
+                    ->money('IDR')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('invoice_path')
+                    ->label('Invoice')
+                    ->formatStateUsing(fn ($state) => $state ? '📄 View' : '-')
+                    ->url(fn ($record) => $record->invoice_path ? url('storage/' . $record->invoice_path) : null)
+                    ->openUrlInNewTab(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Submitted')
+                    ->dateTime('d M Y')
+                    ->sortable(),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'pending'      => 'Pending',
+                        'contacted'    => 'Contacted',
+                        'invoice_sent' => 'Invoice Sent',
+                        'confirmed'    => 'Confirmed',
+                        'completed'    => 'Completed',
+                        'cancelled'    => 'Cancelled',
+                    ]),
+                Tables\Filters\SelectFilter::make('space_id')
+                    ->label('Space')
+                    ->options(fn () => Space::all()->pluck('name', 'id')->toArray()),
+            ])
+            ->recordActions([
+                Action::make('contacted')
+                    ->label('Contacted')
+                    ->icon('heroicon-o-phone')
+                    ->color('info')
+                    ->visible(fn (Booking $record): bool => $record->status === 'pending')
+                    ->action(function (Booking $record): void {
+                        $record->update(['status' => 'contacted']);
+                        Notification::make()
+                            ->title('Status updated to Contacted')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('send_invoice')
+                    ->label('Send Invoice')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('primary')
+                    ->visible(fn (Booking $record): bool => $record->status === 'contacted')
+                    ->form([
+                        TextInput::make('studio_rate')
+                            ->label('Studio Rate (IDR)')
+                            ->numeric()
+                            ->default(0)
+                            ->required(),
+                        TextInput::make('studio_qty')
+                            ->label('Quantity')
+                            ->default(1)
+                            ->required(),
+                        \Filament\Forms\Components\Repeater::make('additional_charges')
+                            ->label('Additional Charges')
+                            ->schema([
+                                TextInput::make('description')->label('Description')->required(),
+                                TextInput::make('qty')->label('Qty')->default(1)->required(),
+                                TextInput::make('rate')->label('Rate (IDR)')->numeric()->required(),
+                            ])
+                            ->default([])
+                            ->columnSpanFull(),
+                    ])
+                    ->action(function (Booking $record, array $data): void {
+
+                    // ── Auto: Hari dari tanggal booking
+                    $bookingCarbon = \Carbon\Carbon::parse($record->booking_date);
+                    $bookingDay    = $bookingCarbon->format('l');           // Tuesday
+                    $bookingDate   = $bookingCarbon->format('d F Y');       // 06 May 2026
+                    $bookingTime   = $bookingCarbon->format('H:i A');       // 10:00 AM
+
+                    // Hitung jam selesai dari durasi
+                    $durationHours = (int) filter_var($record->duration, FILTER_SANITIZE_NUMBER_INT);
+                    $endTime       = $bookingCarbon->copy()->addHours($durationHours)->format('H:i A');
+                    $bookingTime   = $bookingCarbon->format('H:i A') . ' - ' . $endTime;
+
+                    // ── Auto: Kode invoice
+                    $spaceCodeMap = [
+                        'sun-lounge' => 'SLG',
+                        'lodge'      => 'LDG',
+                        'athletics'  => 'ATC',
+                        'cafe'       => 'CFE',
+                        'recovery'   => 'RCY',
+                    ];
+                    $spaceCode   = $spaceCodeMap[$record->space?->slug] ?? 'PLR';
+                    $dateCode    = $bookingCarbon->format('dmY');
+                    $baseInvoice = $spaceCode . $dateCode;
+
+                    // Cek apakah sudah ada invoice dengan kode yang sama
+                    $existingCount = \App\Models\Booking::query()
+                        ->where('invoice_number', 'like', $baseInvoice . '%')
+                        ->where('id', '!=', $record->id)
+                        ->count();
+                    $invoiceNumber = $baseInvoice . '-' . ($existingCount + 1);
+
+                    // ── Auto: Invoice date
+                    $invoiceDate = now()->format('d F Y');
+
+                    // Hitung total
+                    $studioAmount    = $data['studio_rate'] * $data['studio_qty'];
+                    $additionalTotal = collect($data['additional_charges'])
+                        ->sum(fn($c) => $c['rate'] * $c['qty']);
+
+                    foreach ($data['additional_charges'] as &$charge) {
+                        $charge['amount'] = $charge['rate'] * $charge['qty'];
+                    }
+
+                    $subtotal   = $studioAmount + $additionalTotal;
+                    $grandTotal = $subtotal;
+
+                    // Generate PDF
+                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', [
+                        'invoice_number'     => $invoiceNumber,
+                        'invoice_date'       => $invoiceDate,
+                        'customer_name'      => $record->name,
+                        'customer_email'     => $record->email,
+                        'customer_whatsapp'  => $record->whatsapp,
+                        'space_name'         => $record->space?->name,
+                        'booking_day'        => $bookingDay,
+                        'booking_date'       => $bookingDate,
+                        'booking_time'       => $bookingTime,
+                        'studio_qty'         => $data['studio_qty'],
+                        'studio_rate'        => $data['studio_rate'],
+                        'studio_amount'      => $studioAmount,
+                        'additional_charges' => $data['additional_charges'],
+                        'subtotal'           => $subtotal,
+                        'grand_total'        => $grandTotal,
+                    ])->setPaper('a4', 'portrait');
+
+                    // Simpan PDF
+                    $filename   = 'invoices/' . $record->name . '-' . $invoiceNumber . '.pdf';
+                    $pdfContent = $pdf->output();
+                    \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $pdfContent);
+
+                    $invoiceUrl = url('storage/' . $filename);
+
+                    // Update record
+                    $record->update([
+                        'status'         => 'invoice_sent',
+                        'total_price'    => $grandTotal,
+                        'invoice_number' => $invoiceNumber,
+                        'invoice_path'   => $filename,
+                    ]);
+
+                    // Kirim WA ke pelanggan
+                    $message = "Halo *{$record->name}*! 👋\n\n"
+                        . "Berikut invoice untuk booking kamu di *Plural Studio*:\n\n"
+                        . "📋 *Invoice:* {$invoiceNumber}\n"
+                        . "🏠 *Space:* {$record->space?->name}\n"
+                        . "📅 *Tanggal:* {$bookingDate}\n"
+                        . "⏱ *Waktu:* {$bookingTime}\n"
+                        . "💰 *Grand Total:* IDR " . number_format($grandTotal, 0, ',', '.') . "\n\n"
+                        . "📎 *Download Invoice:*\n"
+                        . $invoiceUrl . "\n\n"
+                        . "Silakan lakukan pembayaran dan kirimkan bukti transfer ke kami.\n\n"
+                        . "Terima kasih! 🙏\n"
+                        . "_Plural Studio_";
+
+                    \Illuminate\Support\Facades\Http::withHeaders([
+                        'Authorization' => config('fonnte.cs_token'),
+                    ])->post('https://api.fonnte.com/send', [
+                        'target'  => $record->whatsapp,
+                        'message' => $message,
+                    ]);
+
+                    Notification::make()
+                        ->title('Invoice #' . $invoiceNumber . ' sent to ' . $record->name)
+                        ->success()
+                        ->send();
+                }),
+
+                Action::make('confirm')
+                ->label('Confirm Booking')
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->visible(fn (Booking $record): bool => $record->status === 'invoice_sent')
+                ->form([
+                    FileUpload::make('payment_proof_path')
+                        ->label('Upload Payment Proof')
+                        ->image()
+                        ->directory('payment-proofs')
+                        ->disk('public')
+                        ->required(),
+                ])
+                ->action(function (Booking $record, array $data): void {
+                    $record->update([
+                        'status'             => 'confirmed',
+                        'payment_proof_path' => $data['payment_proof_path'],
+                    ]);
+
+                    $bookingDate = \Carbon\Carbon::parse($record->booking_date)->format('d M Y, H:i');
+
+                    $message = "Hello,\n\n"
+                        . "Thank you for your payment.\n"
+                        . "Your booking is confirmed for *{$bookingDate}* in our *{$record->space?->name}* Studio.\n\n"
+                        . "As part of our studio policy, kindly note the following:\n\n"
+                        . "• A cash deposit of IDR 1,000,000 is required upon arrival as a guarantee against any damages or rental extensions. This will be fully refunded after your session, provided there are no issues.\n\n"
+                        . "• The studio will be ready 5 minutes prior to your scheduled session, once the deposit has been received.\n\n"
+                        . "• We kindly recommend arriving 15 minutes early to allow sufficient time for check-in and deposit processing, ensuring your session begins on time.\n\n"
+                        . "• Any overtime must be requested in advance and will be charged at IDR 1,000,000 per additional hour.\n\n"
+                        . "Should you have any questions prior to your session, please feel free to reach out. We look forward to welcoming you.\n\n"
+                        . "Best regards,\n"
+                        . "*PLURAL*";
+
+                    \Illuminate\Support\Facades\Http::withHeaders([
+                        'Authorization' => config('fonnte.cs_token'),
+                    ])->post('https://api.fonnte.com/send', [
+                        'target'  => $record->whatsapp,
+                        'message' => $message,
+                    ]);
+
+                    Notification::make()
+                        ->title('Booking confirmed & WA sent to ' . $record->name)
+                        ->success()
+                        ->send();
+                }),
+
+                Action::make('done')
+                    ->label('Done')
+                    ->icon('heroicon-o-flag')
+                    ->color('gray')
+                    ->visible(fn (Booking $record): bool => $record->status === 'confirmed')
+                    ->form([
+                        Textarea::make('completion_notes')
+                            ->label('General Notes')
+                            ->rows(3),
+                        Textarea::make('damage_notes')
+                            ->label('Damage / Loss Notes')
+                            ->rows(3),
+                        TextInput::make('extra_time')
+                            ->label('Extra Time (e.g. 30 minutes)'),
+                    ])
+                    ->action(function (Booking $record, array $data): void {
+                        $record->update([
+                            'status'           => 'completed',
+                            'completion_notes' => $data['completion_notes'],
+                            'damage_notes'     => $data['damage_notes'],
+                            'extra_time'       => $data['extra_time'],
+                        ]);
+                        Notification::make()
+                            ->title('Booking completed!')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('cancel')
+                    ->label('Cancel')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn (Booking $record): bool => !in_array($record->status, ['completed', 'cancelled']))
+                    ->requiresConfirmation()
+                    ->action(function (Booking $record): void {
+                        $record->update(['status' => 'cancelled']);
+                        Notification::make()
+                            ->title('Booking cancelled')
+                            ->warning()
+                            ->send();
+                    }),
+
+                EditAction::make(),
+            ])
+            ->defaultSort('created_at', 'desc');
+    }
+
+    public static function getRelations(): array
+    {
+        return [];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index'  => Pages\ListBookings::route('/'),
+            'create' => Pages\CreateBooking::route('/create'),
+            'edit'   => Pages\EditBooking::route('/{record}/edit'),
+        ];
+    }
+}

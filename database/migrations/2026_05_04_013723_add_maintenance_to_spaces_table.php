@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('spaces', function (Blueprint $table) {
+            $table->boolean('is_active')->default(true)->change();
+            $table->boolean('is_maintenance')->default(false)->after('is_active');
+            $table->string('maintenance_message')->nullable()->after('is_maintenance');
+            $table->datetime('maintenance_until')->nullable()->after('maintenance_message');
+        });
+    }
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('spaces', function (Blueprint $table) {
+            //
+        });
+    }
+};
