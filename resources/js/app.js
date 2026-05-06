@@ -2,26 +2,36 @@ import './bootstrap';
 
 // Navbar scroll
 const navbar = document.getElementById('navbar');
+// Gunakan class hero atau pastikan kamu tahu halaman mana yang mau transparan di awal
 const hasHero = document.querySelector('.hero');
 
 if (navbar) {
-    // Kalau tidak ada hero → langsung solid
-    if (!hasHero) {
-        navbar.style.background = 'rgba(26,26,24,0.97)';
-        navbar.style.backdropFilter = 'blur(8px)';
-    }
-
-    window.addEventListener('scroll', () => {
+    // Fungsi reusable untuk update style navbar
+    const updateNavbarStyle = () => {
         if (window.scrollY > 80) {
+            // Kondisi saat di-scroll ke bawah
             navbar.style.background = 'rgba(26,26,24,0.97)';
             navbar.style.backdropFilter = 'blur(8px)';
         } else {
+            // Kondisi saat di posisi paling atas (0)
             if (hasHero) {
+                // Halaman dengan Hero: Transparan
                 navbar.style.background = 'transparent';
+                navbar.style.backdropFilter = 'none';
+            } else {
+                // Halaman TANPA Hero: Kamu mau transparan juga atau tetep solid?
+                // Kalau mau tetep transparan sampai di-scroll, ganti ke 'transparent'
+                navbar.style.background = 'transparent'; 
                 navbar.style.backdropFilter = 'none';
             }
         }
-    });
+    };
+
+    // Jalankan saat pertama kali load
+    updateNavbarStyle();
+
+    // Jalankan setiap kali scroll
+    window.addEventListener('scroll', updateNavbarStyle);
 }
 
 // Lookbook Carousel

@@ -37,6 +37,68 @@ body {
     color: var(--charcoal);
     font-weight: 300;
 }
+
+    #skeleton-hero {
+        transition: opacity 1s ease;
+    }
+
+     /* ── Shimmer athletics ── */
+    .shimmer-effect {
+        background: linear-gradient(90deg, #0d0a08 25%, #1a1a18 50%, #0d0a08 75%);
+        background-size: 200% 100%;
+        animation: shimmer-anim 2s infinite linear;
+    }
+    @keyframes shimmer-anim {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+
+    .shimmer-main {
+        background: linear-gradient(90deg, #0d0a08 25%, #1a1a18 50%, #0d0a08 75%);
+        background-size: 200% 100%;
+        animation: shimmer-main-anim 2.5s infinite linear;
+    }
+    @keyframes shimmer-main-anim {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    
+    /* ── Shimmer cafe ── */
+    .shimmer-cafe {
+        background: linear-gradient(90deg, #0d0a08 25%, #14110f 50%, #0d0a08 75%);
+        background-size: 200% 100%;
+        animation: shimmer-cafe-anim 2s infinite linear;
+    }
+    @keyframes shimmer-cafe-anim {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    /* ── SHimmer Sun Lounge ── */
+    .shimmer-sun {
+        background: linear-gradient(90deg, #f5f0eb 25%, #ede7e1 50%, #f5f0eb 75%);
+        background-size: 200% 100%;
+        animation: shimmer-sun-anim 2s infinite linear;
+    }
+    @keyframes shimmer-sun-anim {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    /* ── Shimmer production ── */
+    .shimmer-prod {
+        background: linear-gradient(90deg, #0d0a08 25%, #151210 50%, #0d0a08 75%);
+        background-size: 200% 100%;
+        animation: shimmer-prod-anim 2s infinite linear;
+    }
+
+    @keyframes shimmer-prod-anim {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
     .hero {
         position: relative;
         width: 100%;
@@ -156,7 +218,7 @@ body {
 
 .studio-desc {
     font-size: 0.68rem;
-    line-height: 1.8;
+    line-height:1.2;
     color: var(--mid-gray);
     margin-bottom: 0.5rem;
     text-align: justify;

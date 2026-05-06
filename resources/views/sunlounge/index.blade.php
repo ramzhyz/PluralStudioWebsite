@@ -23,18 +23,28 @@
 </div>
 @endif
 
-    {{-- ── HERO VIDEO ── --}}
+    {{-- ── HERO VIDEO SUN LOUNGE WITH SKELETON ── --}}
     <section style="position:relative; width:100%; height:100vh; overflow:hidden; background:#f5f0eb;">
-        <video autoplay muted loop playsinline preload="metadata"
-            style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.95;">
+        
+        <div id="skeleton-sunlounge" 
+            style="position:absolute; inset:0; z-index: 5; background: #f5f0eb; display: flex; align-items: center; justify-content: center; transition: opacity 1s ease;">
+            <div class="shimmer-sun" style="position:absolute; inset:0;"></div>
+            <img src="{{ asset('images/logo-plural.svg') }}" style="height: 60px; opacity: 0.1; z-index: 6; filter: invert(1);">
+        </div>
+
+        <video autoplay muted loop playsinline preload="metadata" id="video-sunlounge"
+            {{-- Saat video mutar, skeleton hilang & video muncul --}}
+            onplaying="this.style.opacity='0.95'; document.getElementById('skeleton-sunlounge').style.opacity='0'; setTimeout(() => document.getElementById('skeleton-sunlounge').remove(), 1000);"
+            style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition: opacity 1.2s ease; z-index: 2;">
             <source src="{{ asset('videos/sunlounge-hero.mp4') }}" type="video/mp4">
             <source src="{{ asset('videos/sunlounge-hero.webm') }}" type="video/webm">
         </video>
-        {{-- Sun Lounge lebih terang, overlay lebih tipis --}}
-        <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 60%);"></div>
 
-        <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:700px;">
-            <h1 style="'DM Sans', sans-serif; font-size:2rem; font-weight:300; margin-bottom:0.75rem; ">
+        <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 60%); z-index: 3;"></div>
+
+        <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:700px; z-index: 10;">
+            {{-- Fix: font-family sudah ditambahkan --}}
+            <h1 style="font-family: 'DM Sans', sans-serif; font-size:2rem; font-weight:300; margin-bottom:0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
                 Sun Lounge
             </h1>
             <p style="font-size:0.7rem; line-height:1.85; opacity:0.85; letter-spacing:0.03em;">
