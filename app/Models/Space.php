@@ -12,6 +12,14 @@ class Space extends Model
         'is_maintenance',
         'maintenance_message',
         'maintenance_until',
+        'checkin_signature', 'checkout_signature',
+        'staff_checkin_signature', 'staff_checkout_signature',
+        'staff_name', 'deposit_amount', 'deposit_method',
+        'checkin_path', 'checkout_path',
+        'checked_in_at', 'checked_out_at',
+        'cyclorama_status', 'floor_status', 'furniture_status',
+        'lighting_status', 'equipment_status',
+        'payment_method_final', 'deposit_deducted',
     ];
 
     public function bookings()

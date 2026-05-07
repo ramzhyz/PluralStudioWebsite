@@ -22,6 +22,12 @@ class MediaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Media Site';
 
+    public static function canViewAny(): bool
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        return $user && $user->isSuperAdmin();
+    }
+
     public static function form(Schema $schema): Schema
     {
         return MediaForm::configure($schema);

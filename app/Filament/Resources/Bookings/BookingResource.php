@@ -23,6 +23,8 @@ use Filament\Notifications\Notification;
 use Filament\Support\Enums\FontWeight;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Filament\Forms\Components\Placeholder;
+use Illuminate\Support\HtmlString;
 
 class BookingResource extends Resource
 {
@@ -75,18 +77,23 @@ class BookingResource extends Resource
                         ->required(),
                     TextInput::make('total_price')
                         ->label('Total Price (IDR)')
-                        ->numeric(),
+                        ->numeric()
+                        ->readOnly(),
                     TextInput::make('invoice_number')
-                        ->label('Invoice Number'),
-                    FileUpload::make('invoice_path')
+                        ->label('Invoice Number')
+                        ->readOnly(),
+                    Placeholder::make('invoice_link')
                         ->label('Invoice PDF')
-                        ->acceptedFileTypes(['application/pdf'])
-                        ->directory('invoices'),
-                    FileUpload::make('payment_proof_path')
+                        ->content(fn ($record) => $record?->invoice_path
+                            ? new HtmlString('<a href="' . url('storage/' . $record->invoice_path) . '" target="_blank" style="color:#f59e0b; text-decoration:underline;">📄 View Invoice PDF</a>')
+                            : '-'
+                        ),
+                    Placeholder::make('payment_proof_link')
                         ->label('Payment Proof')
-                        ->image()
-                        ->directory('payment-proofs')
-                        ->disk('public'),
+                        ->content(fn ($record) => $record?->payment_proof_path
+                            ? new HtmlString('<a href="' . url('storage/' . $record->payment_proof_path) . '" target="_blank" style="color:#f59e0b; text-decoration:underline;">🖼️ View Payment Proof</a>')
+                            : '-'
+                        ),
                 ])->columns(2),
 
             Section::make('Completion Notes')
@@ -364,11 +371,27 @@ class BookingResource extends Resource
                         ->send();
                 }),
 
+                Action::make('checkin')
+                    ->label('Check-In')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->color('success')
+                    ->visible(fn (Booking $record): bool => $record->status === 'confirmed')
+                    ->url(fn (Booking $record): string => route('checkin.show', $record))
+                    ->openUrlInNewTab(),
+
+                Action::make('checkout')
+                    ->label('Check-Out')
+                    ->icon('heroicon-o-arrow-right-circle')
+                    ->color('warning')
+                    ->visible(fn (Booking $record): bool => $record->status === 'checked_in')
+                    ->url(fn (Booking $record): string => route('checkout.show', $record))
+                    ->openUrlInNewTab(),
+
                 Action::make('done')
                     ->label('Done')
                     ->icon('heroicon-o-flag')
                     ->color('gray')
-                    ->visible(fn (Booking $record): bool => $record->status === 'confirmed')
+                    ->visible(fn (Booking $record): bool => $record->status === 'checked_in')
                     ->form([
                         Textarea::make('completion_notes')
                             ->label('General Notes')
@@ -391,12 +414,26 @@ class BookingResource extends Resource
                             ->success()
                             ->send();
                     }),
+                Action::make('view_checkin')
+                    ->label('Waiver')
+                    ->icon('heroicon-o-document-text')
+                    ->color('gray')
+                    ->visible(fn (Booking $record): bool => !empty($record->checkin_path))
+                    ->url(fn (Booking $record): string => url('storage/' . $record->checkin_path))
+                    ->openUrlInNewTab(),
 
+                Action::make('view_checkout')
+                    ->label('Checkout PDF')
+                    ->icon('heroicon-o-document-text')
+                    ->color('gray')
+                    ->visible(fn (Booking $record): bool => !empty($record->checkout_path))
+                    ->url(fn (Booking $record): string => url('storage/' . $record->checkout_path))
+                    ->openUrlInNewTab(),
                 Action::make('cancel')
                     ->label('Cancel')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn (Booking $record): bool => !in_array($record->status, ['completed', 'cancelled']))
+                    ->visible(fn (Booking $record): bool => !in_array($record->status, ['completed', 'cancelled', 'checked_in']))
                     ->requiresConfirmation()
                     ->action(function (Booking $record): void {
                         $record->update(['status' => 'cancelled']);
@@ -407,6 +444,57 @@ class BookingResource extends Resource
                     }),
 
                 EditAction::make(),
+
+
+                Action::make('reschedule')
+                    ->label('Reschedule')
+                    ->icon('heroicon-o-calendar-days')
+                    ->color('warning')
+                    ->visible(fn (Booking $record): bool => in_array($record->status, ['invoice_sent', 'confirmed']))
+                    ->form([
+                        DateTimePicker::make('new_booking_date')
+                            ->label('New Booking Date & Time')
+                            ->required(),
+                        TextInput::make('reschedule_reason')
+                            ->label('Reason (optional)')
+                            ->placeholder('e.g. Customer request'),
+                    ])
+                    ->requiresConfirmation()
+                    ->modalDescription('This will generate a new invoice and notify the customer.')
+                    ->action(function (Booking $record, array $data): void {
+
+                        $oldDate = \Carbon\Carbon::parse($record->booking_date)->format('d M Y, H:i');
+                        $newDate = \Carbon\Carbon::parse($data['new_booking_date'])->format('d M Y, H:i');
+
+                        // Update tanggal booking
+                        $record->update([
+                            'booking_date' => $data['new_booking_date'],
+                            'status'       => 'contacted', // reset ke contacted biar bisa send invoice baru
+                        ]);
+
+                        // Kirim notif WA ke pelanggan
+                        $message = "Halo *{$record->name}*! 📅\n\n"
+                            . "Booking kamu telah di-*RESCHEDULE*.\n\n"
+                            . "📅 *Tanggal Lama:* {$oldDate}\n"
+                            . "📅 *Tanggal Baru:* {$newDate}\n"
+                            . "🏠 *Space:* {$record->space?->name}\n\n"
+                            . ($data['reschedule_reason'] ? "📝 *Alasan:* {$data['reschedule_reason']}\n\n" : '')
+                            . "Invoice baru akan segera dikirimkan. Mohon tunggu konfirmasi selanjutnya.\n\n"
+                            . "Terima kasih atas pengertiannya! 🙏\n"
+                            . "_Plural Studio_";
+
+                        \Illuminate\Support\Facades\Http::withHeaders([
+                            'Authorization' => config('fonnte.cs_token'),
+                        ])->post('https://api.fonnte.com/send', [
+                            'target'  => $record->whatsapp,
+                            'message' => $message,
+                        ]);
+
+                        Notification::make()
+                            ->title('Booking rescheduled — new invoice needed')
+                            ->warning()
+                            ->send();
+                    }),
             ])
             ->defaultSort('created_at', 'desc');
     }

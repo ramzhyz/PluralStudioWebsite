@@ -13,6 +13,14 @@ class Booking extends Model
         'total_price', 'invoice_number', 'invoice_path',
         'payment_proof_path', 'completion_notes',
         'extra_time', 'damage_notes',
+        'checkin_signature', 'checkout_signature',
+        'staff_checkin_signature', 'staff_checkout_signature',
+        'staff_name', 'deposit_amount', 'deposit_method',
+        'checkin_path', 'checkout_path',
+        'checked_in_at', 'checked_out_at',
+        'cyclorama_status', 'floor_status', 'furniture_status',
+        'lighting_status', 'equipment_status',
+        'payment_method_final', 'deposit_deducted',
     ];
 
     public function space()

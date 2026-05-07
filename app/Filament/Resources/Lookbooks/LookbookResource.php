@@ -22,6 +22,12 @@ class LookbookResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Lookbook Media';
 
+    public static function canViewAny(): bool
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        return $user && $user->isSuperAdmin();
+    }
+
     public static function form(Schema $schema): Schema
     {
         return LookbookForm::configure($schema);
