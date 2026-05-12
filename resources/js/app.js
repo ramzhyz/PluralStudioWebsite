@@ -129,4 +129,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Jalankan awal
     startAutoplay();
+
+
+    function toggleMobileNav() {
+        const nav = document.getElementById('mobile-nav');
+        const isOpen = nav.style.display === 'flex';
+    
+        if (isOpen) {
+            nav.style.display = 'none';
+            document.body.style.overflow = '';
+        } else {
+            nav.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    // Tutup mobile nav kalau resize ke desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            const nav = document.getElementById('mobile-nav');
+            if (nav) {
+                nav.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        });
 });

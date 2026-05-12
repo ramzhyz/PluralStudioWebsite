@@ -27,12 +27,12 @@
     <section style="position:relative; width:100%; height:100vh; overflow:hidden; background:#0d0a08;">
         <video autoplay muted loop playsinline preload="metadata"
             style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.95;">
-            <source src="{{ asset('videos/recovery-hero.webm') }}" type="video/mp4">
+            <source src="{{ asset('videos/recovery-hero.mp4') }}" type="video/mp4">
         </video>
         <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%);"></div>
 
         <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:480px;">
-            <h1 style="'DM Sans', sans-serif; font-size:2rem; font-weight:300;  margin-bottom:0.75rem; text-transform:uppercase; ">
+            <h1 style="'DM Sans', sans-serif; font-size:1.5rem; font-weight:300;  margin-bottom:0.75rem; text-transform:uppercase; ">
                 Recovery
             </h1>
             <p style="font-size:0.7rem; line-height:1.85; opacity:0.8; letter-spacing:0.03em;">
@@ -148,7 +148,7 @@
 
     {{-- ── CTA BUTTONS ── --}}
     <section style="display:flex; justify-content:center; gap:1rem; padding:1rem 0 4rem;">
-        <a href="#" style="
+        <a href="{{ route('booking') }}" style="
             padding:0.7rem 2rem;
             background:var(--charcoal); color:#fff;
             border:1px solid var(--charcoal);
@@ -157,14 +157,14 @@
         " onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
             Book Recovery
         </a>
-        <a href="#" style="
+        <a href="https://wa.me/628123456789" target="_blank" style="
             padding:0.7rem 2rem;
             background:transparent; color:var(--charcoal);
             border:1px solid var(--charcoal);
             font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase;
             text-decoration:none; transition:background 0.2s, color 0.2s;
         " onmouseover="this.style.background='var(--charcoal)'; this.style.color='#fff'"
-           onmouseout="this.style.background='transparent'; this.style.color='var(--charcoal)'">
+        onmouseout="this.style.background='transparent'; this.style.color='var(--charcoal)'">
             Visit Recovery
         </a>
     </section>

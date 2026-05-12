@@ -45,7 +45,7 @@ class HomeController extends Controller
 
         $lookbook = collect(glob(public_path('images/lookbook-*')))
             ->map(fn($path) => 'images/' . basename($path))
-            ->sort()
+            ->sortBy(fn($path) => (int) filter_var($path, FILTER_SANITIZE_NUMBER_INT))
             ->values()
             ->toArray();
 

@@ -253,7 +253,7 @@ body {
         height: 100%;
         min-height: 560px;
         object-fit: cover;
-        object-position: center 30%;  /* geser crop ke bawah biar bagian atas lurus */
+        object-position: center 35%;  /* geser crop ke bawah biar bagian atas lurus */
         display: block;
     }
     .wellness-overlay {
@@ -307,7 +307,7 @@ body {
 /* ── LOOKBOOK ── */
 .lookbook-header {
     text-align: center;
-    padding: 2rem 2.5rem 2rem; /* Tambah sedikit jarak bawah sebelum carousel */
+    padding: 2rem 2.5rem 1.5rem; /* Tambah sedikit jarak bawah sebelum carousel */
 }
 .lookbook-header h2 {
     text-align: center;
@@ -525,3 +525,196 @@ body {
 }
 
 
+/* ══════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — Replace semua @media di app.css
+   ══════════════════════════════════════════════════════ */
+
+/* Hamburger lines */
+.ham-line {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+/* Mobile nav link hover */
+#mobile-nav a:hover { opacity: 0.6 !important; }
+
+/* ── TABLET (max 1024px) ── */
+@media (max-width: 1024px) {
+    .studios-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+}
+
+/* ── MOBILE (max 768px) ── */
+@media (max-width: 768px) {
+
+    /* ── NAVBAR ── */
+    #navbar {
+        padding: 0 1.25rem !important;
+        height: 64px;
+    }
+    #navbar > a img {
+        height: 64px !important;
+    }
+    /* Sembunyikan desktop nav links */
+    #navbar > ul {
+        display: none !important;
+    }
+    /* Tampilkan hamburger */
+    #nav-hamburger {
+        display: flex !important;
+    }
+
+    /* ── HERO ── */
+    .hero-content {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1.25rem !important;
+        bottom: 2rem !important;
+        left: 1.25rem !important;
+        right: 1.25rem !important;
+    }
+    .hero-tagline {
+        font-size: 0.85rem !important;
+    }
+    .hero-buttons {
+        flex-direction: row !important;
+        gap: 0.5rem !important;
+        flex-wrap: wrap !important;
+    }
+    .btn-outline-white {
+        font-size: 0.55rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+        font-size: 0.75rem !important;
+        padding: 2rem 1rem 1.5rem !important;
+        letter-spacing: 0.15em !important;
+    }
+
+    /* ── STUDIOS GRID ── */
+    .studios-grid {
+        grid-template-columns: 1fr !important;
+        padding: 0 1.25rem !important;
+        gap: 2rem !important;
+    }
+    .studio-img-wrap img {
+        aspect-ratio: 2.5/4 !important;
+    }
+    .studio-info {
+        padding: 0.75rem 0 1rem !important;
+    }
+    .studio-desc {
+        max-width: 100% !important;
+        text-align: left !important;
+    }
+
+    /* ── WELLNESS ── */
+    .wellness-wrap {
+        min-height: unset !important;
+        aspect-ratio: 2/4 !important;
+    }
+    .wellness-wrap img {
+        min-height: unset !important;
+        height: 100% !important;
+        aspect-ratio: 2/4 !important;
+        object-position: center center !important;
+    }
+    .wellness-overlay {
+        background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%) !important;
+    }
+    .wellness-content {
+        left: 1.25rem !important;
+        right: 1.25rem !important;
+        top: auto !important;
+        bottom: 2rem !important;
+        transform: none !important;
+        max-width: 100% !important;
+    }
+    .wellness-title {
+        font-size: 0.75rem !important;
+    }
+    .wellness-desc {
+        font-size: 0.65rem !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 4 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    /* ── LOOKBOOK ── */
+    .lookbook-header {
+        padding: 2rem 1.25rem 1rem !important;
+    }
+    .lookbook-header h2 {
+        font-size: 0.75rem !important;
+        letter-spacing: 0.15em !important;
+    }
+    .lookbook-header p {
+        font-size: 0.62rem !important;
+    }
+    /* 1 gambar per slide di mobile */
+    .lookbook-slide {
+        grid-template-columns: 1fr !important;
+        min-width: 100% !important;
+    }
+    .lookbook-slide > div:not(:first-child) {
+        display: none !important;
+    }
+    .lookbook-slide img {
+        aspect-ratio: 4/5 !important;
+    }
+
+    /* ── MORE SPACE (space detail pages) ── */
+    .studios-grid .space-card .studio-img-wrap img {
+        aspect-ratio: 4/3 !important;
+    }
+
+    /* ── GALLERY SCROLL ── */
+    .gallery-item {
+        height: 220px !important;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+        grid-template-columns: 1fr !important;
+        padding: 2.5rem 1.25rem !important;
+        gap: 2rem !important;
+    }
+    footer h4 {
+        font-size: 0.55rem !important;
+    }
+    footer p {
+        font-size: 0.65rem !important;
+    }
+    footer form {
+        flex-direction: column !important;
+    }
+    footer form input {
+        border-bottom: 1px solid var(--light-border) !important;
+        padding: 0.75rem 0.75rem !important;
+    }
+    footer form button {
+        padding: 0.75rem !important;
+        text-align: center !important;
+    }
+}
+
+/* ── SMALL MOBILE (max 480px) ── */
+@media (max-width: 480px) {
+    .hero-tagline {
+        font-size: 0.75rem !important;
+    }
+    .wellness-wrap {
+        min-height: 380px !important;
+    }
+    .wellness-wrap img {
+        min-height: 380px !important;
+    }
+}

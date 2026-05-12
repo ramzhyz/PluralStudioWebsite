@@ -44,7 +44,7 @@
 
         <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:700px; z-index: 10;">
             {{-- Fix: font-family sudah ditambahkan --}}
-            <h1 style="font-family: 'DM Sans', sans-serif; font-size:2rem; font-weight:300; margin-bottom:0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+            <h1 style="font-family: 'DM Sans', sans-serif; font-size:1.5rem; font-weight:300; margin-bottom:0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
                 Sun Lounge
             </h1>
             <p style="font-size:0.7rem; line-height:1.85; opacity:0.85; letter-spacing:0.03em;">
@@ -147,7 +147,7 @@
 
     {{-- ── CTA BUTTONS ── --}}
     <section style="display:flex; justify-content:center; gap:1rem; padding:1rem 0 4rem;">
-        <a href="#" style="
+        <a href="{{ route('booking') }}" style="
             padding:0.7rem 2rem;
             background:var(--charcoal); color:#fff;
             border:1px solid var(--charcoal);
@@ -156,14 +156,14 @@
         " onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
             Book Sun Lounge
         </a>
-        <a href="#" style="
+        <a href="https://wa.me/628123456789" target="_blank" style="
             padding:0.7rem 2rem;
             background:transparent; color:var(--charcoal);
             border:1px solid var(--charcoal);
             font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase;
             text-decoration:none; transition:background 0.2s, color 0.2s;
         " onmouseover="this.style.background='var(--charcoal)'; this.style.color='#fff'"
-           onmouseout="this.style.background='transparent'; this.style.color='var(--charcoal)'">
+        onmouseout="this.style.background='transparent'; this.style.color='var(--charcoal)'">
             Visit Sun Lounge
         </a>
     </section>

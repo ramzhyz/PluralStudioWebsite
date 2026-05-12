@@ -43,7 +43,7 @@
         <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.25) 100%, rgba(0,0,0,0.1) 80%); z-index: 3;"></div>
 
         <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:700px; z-index: 10;">
-            <h1 style="font-family:'DM Sans',sans-serif; font-size:2rem; text-transform:uppercase; font-weight:300; letter-spacing:0.05em; margin-bottom:0.75rem;">
+            <h1 style="font-family:'DM Sans',sans-serif; font-size:1.5rem; text-transform:uppercase; font-weight:300; letter-spacing:0.05em; margin-bottom:0.75rem;">
                 Athletic
             </h1>
             <p style="font-size:0.7rem; line-height:1.85; opacity:0.8; letter-spacing:0.03em;">
@@ -149,7 +149,7 @@
 
     {{-- ── CTA BUTTONS ── --}}
     <section style="display:flex; justify-content:center; gap:1rem; padding:1rem 0 4rem;">
-        <a href="#" style="
+        <a href="{{ route('booking') }}" style="
             padding:0.7rem 2rem;
             background:var(--charcoal); color:#fff;
             border:1px solid var(--charcoal);
@@ -158,14 +158,14 @@
         " onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
             Book Athletic
         </a>
-        <a href="#" style="
+        <a href="https://wa.me/628123456789" target="_blank" style="
             padding:0.7rem 2rem;
             background:transparent; color:var(--charcoal);
             border:1px solid var(--charcoal);
             font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase;
             text-decoration:none; transition:background 0.2s, color 0.2s;
         " onmouseover="this.style.background='var(--charcoal)'; this.style.color='#fff'"
-           onmouseout="this.style.background='transparent'; this.style.color='var(--charcoal)'">
+        onmouseout="this.style.background='transparent'; this.style.color='var(--charcoal)'">
             Visit Athletic
         </a>
     </section>
@@ -189,6 +189,13 @@
             'cafe'       => 'studio-cafe.jpg',
             'recovery'   => 'wellness-sauna.jpg',
         ];
+        $positionMap = [
+            'sun-lounge' => 'center top',
+            'lodge'      => 'center top',
+            'athletics'  => 'center center',
+            'cafe'       => 'center center',
+            'recovery'   => '47.5% center',
+        ];
         @endphp
 
         <div class="studios-grid" style="grid-template-columns: repeat({{ count($otherSpaces) }}, 1fr);">
@@ -197,7 +204,7 @@
                 <div style="overflow:hidden; position:relative;" class="image-wrapper">
                     <img src="{{ asset('images/' . ($imageMap[$other->slug] ?? 'studio-' . $other->slug . '.jpg')) }}"
                         alt="{{ $other->name }}"
-                        style="width:100%; aspect-ratio:3/4; object-fit:cover; display:block; transition:transform 0.65s ease;">
+                        style="width:100%; aspect-ratio:3/4; object-fit:cover; display:block; transition:transform 0.65s ease; object-position:{{ $positionMap[$other->slug] ?? 'center center' }};">
                     <div class="space-overlay">
                         <div class="overlay-content">
                             <p class="overlay-name">{{ $other->name }}</p>

@@ -18,7 +18,7 @@
         <video autoplay muted loop playsinline preload="auto" id="hero-video-main"
             onplaying="this.style.opacity='0.9'; document.getElementById('skeleton-main').style.opacity='0'; setTimeout(() => document.getElementById('skeleton-main').remove(), 1200);"
             style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition: opacity 1.5s ease; z-index: 2;">
-            <source src="{{ asset('videos/hero.webm') }}" type="video/mp4">
+            <source src="{{ asset('videos/hero.mp4') }}" type="video/mp4">
         </video>
 
         <div class="hero-overlay" style="position:absolute; inset:0; background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%); z-index: 3;"></div>
@@ -50,7 +50,7 @@
                 <div class="studio-info">
                     <p class="studio-name">{{ $studio['name'] }}</p>
                     <p class="studio-desc">{{ $studio['desc'] }}</p>
-                    <a href="#" class="btn-explore">Explore</a>
+                    <a href="{{ $studio['href'] }}" class="btn-explore">Explore</a>
                 </div>
             </div>
             @endforeach
@@ -81,9 +81,13 @@
 
         <div class="lookbook-carousel-wrap">
             <div class="lookbook-track" id="lookbookTrack">
-                @foreach($lookbook as $i => $img)
-                <div class="lookbook-slide">
-                    <img src="{{ asset($img) }}" alt="Lookbook {{ $i + 1 }}">
+                @foreach(array_chunk($lookbook, 3) as $slideIndex => $slideImages)
+                <div class="lookbook-slide" style="min-width:100%; display:grid; grid-template-columns:repeat(3,1fr); flex-shrink:0;">
+                    @foreach($slideImages as $img)
+                    <div style="overflow:hidden;">
+                        <img src="{{ asset($img) }}" alt="Lookbook" style="width:100%; aspect-ratio:3/4; object-fit:cover; display:block;">
+                    </div>
+                    @endforeach
                 </div>
                 @endforeach
             </div>

@@ -26,3 +26,4 @@ Route::get('/admin/checkin/{booking}', [CheckInController::class, 'show'])->name
 Route::post('/admin/checkin/{booking}', [CheckInController::class, 'store'])->name('checkin.store');
 Route::get('/admin/checkout/{booking}', [CheckInController::class, 'showCheckout'])->name('checkout.show');
 Route::post('/admin/checkout/{booking}', [CheckInController::class, 'storeCheckout'])->name('checkout.store');
+Route::get('/production/{slug}', [ProductionController::class, 'show'])->name('production.detail');

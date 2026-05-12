@@ -23,7 +23,7 @@
             @endif
 
             {{-- Title --}}
-            <h1 style="font-family: 'DM Sans', sans-serif !important; font-size: 2.5rem !important; font-weight: 300; Color:#ffff; margin-bottom: 1rem;">
+            <h1 style="font-family: 'DM Sans', sans-serif !important; font-size: 1.5rem !important; font-weight: 300; Color:#ffff; margin-bottom: 1rem;">
                 Booking
             </h1>
             <p style="font-size:0.72rem; line-height:1.85; color:rgba(255,255,255,0.75); margin-bottom:2.5rem; max-width:720px; margin-left:auto; margin-right:auto;">
