@@ -163,6 +163,30 @@ body {
     }
     .btn-outline-white:hover { background: rgba(255,255,255,0.12); }
 
+    .hero-overlay-content {
+    position: absolute; 
+    bottom: 2.5rem;      
+    left: 2.5rem;       
+    color: #fff;         
+    max-width: 40%;    
+    z-index: 10;
+}
+
+.hero-overlay-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+}
+
+.hero-overlay-desc {
+    font-size: 0.7rem;
+    line-height: 1.85;
+    opacity: 0.8;
+    letter-spacing: 0.03em;
+}
+
     /* Section title lebih besar */
 .section-title {
      text-align: center;      /* pastikan ada */
@@ -717,4 +741,48 @@ body {
     .wellness-wrap img {
         min-height: 380px !important;
     }
+
+    .hero-overlay-content {
+        /* Mengecilkan posisi dan lebar di mobile */
+        left: 1.25rem !important;
+        right: 1.25rem !important;
+        bottom: 2rem !important;
+        max-width: 100% !important;
+    }
+
+    .hero-overlay-title {
+        /* Mengecilkan tulisan Recovery */
+        font-size: 0.9rem !important; 
+        margin-bottom: 0.5rem !important;
+    }
+
+    .hero-overlay-desc {
+        /* Mengecilkan tulisan deskripsi */
+        font-size: 0.62rem !important;
+        line-height: 1.6 !important;
+    }
+
+    #showcaseTrack {
+        height: 100vh !important;
+    }
+    #showcaseTrack > div {
+        min-width: 100vw !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        position: relative !important;
+    }
+    #showcaseTrack > div img {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center top !important;
+    }
 }
+
+/* ── SHOWCASE SLIDER ── */
+
+

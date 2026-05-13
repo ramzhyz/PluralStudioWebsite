@@ -42,11 +42,9 @@
 
         <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.25) 100%, rgba(0,0,0,0.1) 80%); z-index: 3;"></div>
 
-        <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:700px; z-index: 10;">
-            <h1 style="font-family:'DM Sans',sans-serif; font-size:1.5rem; text-transform:uppercase; font-weight:300; letter-spacing:0.05em; margin-bottom:0.75rem;">
-                Athletic
-            </h1>
-            <p style="font-size:0.7rem; line-height:1.85; opacity:0.8; letter-spacing:0.03em;">
+         <div class="hero-overlay-content">
+            <h1 class="hero-overlay-title">Athletic</h1>
+            <p class="hero-overlay-desc">
                 A performance-led studio fully equipped for strength, conditioning, and mobility.
                 Built for athletes and fitness content creators, with flexible lighting so you can
                 control the energy of every shoot.

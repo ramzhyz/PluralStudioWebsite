@@ -31,11 +31,9 @@
         </video>
         <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%);"></div>
 
-        <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:480px;">
-            <h1 style="'DM Sans', sans-serif; font-size:1.5rem; font-weight:300;  margin-bottom:0.75rem; text-transform:uppercase; ">
-                Recovery
-            </h1>
-            <p style="font-size:0.7rem; line-height:1.85; opacity:0.8; letter-spacing:0.03em;">
+        <div class="hero-overlay-content">
+            <h1 class="hero-overlay-title">Recovery</h1>
+            <p class="hero-overlay-desc">
                 A private, controlled space for up to 3 people, featuring an infrared sauna and ice bath.
                 Designed for reset, contrast, and focused wellness content in a minimal, distraction-free environment.
             </p>

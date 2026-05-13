@@ -42,12 +42,9 @@
 
         <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%); z-index: 3;"></div>
 
-        <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:700px; z-index: 10;">
-            {{-- Fix: font-family ditambahkan agar tidak balik ke default browser --}}
-            <h1 style="font-family: 'DM Sans', sans-serif; font-size:1.5rem; font-weight:300; letter-spacing:0.05em; margin-bottom:0.75rem; text-transform:uppercase;">
-                Cafe
-            </h1>
-            <p style="font-size:0.7rem; line-height:1.85; opacity:0.8; letter-spacing:0.03em;">
+         <div class="hero-overlay-content">
+            <h1 class="hero-overlay-title">Cafe</h1>
+            <p class="hero-overlay-desc">
                 A relaxed, welcoming space designed for creative minds to unwind, connect, and recharge.
                 Whether you are between shoots or looking for a quiet corner to work, our cafe offers
                 a curated menu in a minimal, thoughtfully designed environment.
@@ -58,7 +55,7 @@
     {{-- ── SHOWCASE CAROUSEL ── --}}
     <section style="position:relative; width:100%; height:100vh; overflow:hidden; background:#f0ebe4;">
 
-        <div style="position:absolute; top:2.5rem; right:2.5rem; z-index:10; color:var(--charcoal); text-align:right;">
+        <div style="position:absolute; top:2.5rem; right:6rem; z-index:10; color:white ; text-align:right;">
             <h2 style="'DM Sans', sans-serif;; font-size:2rem; font-weight:300; text-transform:uppercase;">Cafe</h2>
             <p style="font-size:0.58rem; letter-spacing:0.25em; text-transform:uppercase; opacity:0.8; margin-top:0rem;">Showcase</p>
         </div>

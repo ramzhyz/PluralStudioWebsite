@@ -31,12 +31,10 @@
             <source src="{{ asset('videos/lodge-hero.webm') }}" type="video/webm">
         </video>
         <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%);"></div>
-
-        <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:480px;">
-            <h1 style="font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:300; letter-spacing:0.05em; margin-bottom:0.75rem;">
-                Lodge
-            </h1>
-            <p style="font-size:0.7rem; line-height:1.85; opacity:0.8; letter-spacing:0.03em;">
+        
+        <div class="hero-overlay-content">
+            <h1 class="hero-overlay-title">Lodge</h1>
+            <p class="hero-overlay-desc">
                 A warm, natural-light studio with brown-toned walls, wood flooring, and a soft glass block backdrop.
                 Designed with a lived-in bedroom and living space feel. Ideal for portrait, lifestyle, and brand work.
             </p>

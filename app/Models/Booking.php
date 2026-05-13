@@ -20,7 +20,11 @@ class Booking extends Model
         'checked_in_at', 'checked_out_at',
         'cyclorama_status', 'floor_status', 'furniture_status',
         'lighting_status', 'equipment_status',
-        'payment_method_final', 'deposit_deducted',
+        'payment_method_final', 'deposit_deducted','extra_payment_proof',
+    ];
+
+    protected $casts = [
+         'extra_payment_proof' => 'array', // ← tambah ini
     ];
 
     public function space()

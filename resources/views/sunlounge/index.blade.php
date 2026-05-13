@@ -4,6 +4,7 @@
 
 @section('content')
 
+
 @if($space && !$space->is_maintenance && $space->maintenance_until)
 <div style="
     position:fixed; top:0; left:0; right:0; z-index:200;
@@ -42,13 +43,10 @@
 
         <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 60%); z-index: 3;"></div>
 
-        <div style="position:absolute; bottom:2.5rem; left:2.5rem; color:#fff; max-width:700px; z-index: 10;">
-            {{-- Fix: font-family sudah ditambahkan --}}
-            <h1 style="font-family: 'DM Sans', sans-serif; font-size:1.5rem; font-weight:300; margin-bottom:0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                Sun Lounge
-            </h1>
-            <p style="font-size:0.7rem; line-height:1.85; opacity:0.85; letter-spacing:0.03em;">
-                A light-filled studio built for clean, natural imagery. Soft tones, open space, and controlled daylight
+        <div class="hero-overlay-content">
+            <h1 class="hero-overlay-title">Sun Lounge</h1>
+            <p class="hero-overlay-desc">
+                 A light-filled studio built for clean, natural imagery. Soft tones, open space, and controlled daylight
                 create an effortless setting for lifestyle, fashion, and editorial shoots.
                 Designed to feel calm, minimal, and ready to shoot.
             </p>
@@ -60,7 +58,7 @@
 
         {{-- Sun Lounge: label di kanan --}}
         <div style="position:absolute; top:2.5rem; right:2.5rem; z-index:10; color:var(--charcoal); text-align:right;">
-            <h2 style="'DM Sans', sans-serif; font-size:2.5rem; font-weight:300;">Sun Lounge</h2>
+            <h2 style="'DM Sans', sans-serif; font-size:2rem; font-weight:300;">Sun Lounge</h2>
             <p style="font-size:0.58rem; letter-spacing:0.25em; text-transform:uppercase; opacity:0.5; margin-top:0rem;">Showcase</p>
         </div>
 
